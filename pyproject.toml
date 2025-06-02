@@ -1,5 +1,5 @@
 [project]
-name = "elapse-compare"
+name = "dss-environment-analysis"
 version = "0.1.0"
 description = "Air pollution data extraction and comparison with different sources - HealthyPlanet Project - AWI"
 readme = "README.md"
