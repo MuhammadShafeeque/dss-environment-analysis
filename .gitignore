@@ -152,7 +152,6 @@ figures/
 *.svg
 
 # Development containers and Docker
-.devcontainer/
 docker-compose.override.yml
 .dockerignore
 
