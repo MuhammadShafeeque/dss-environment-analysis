@@ -145,7 +145,7 @@ output/
 results/
 plots/
 figures/
-# Allow the logo image in docs/_static
+# Allow the logo image in root
 !DSS_Logo.png
 *.png
 *.jpg
