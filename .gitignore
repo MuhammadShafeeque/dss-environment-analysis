@@ -146,7 +146,7 @@ results/
 plots/
 figures/
 # Allow the logo image in docs/_static
-!docs/_static/DSS_Logo2a_small_trans.png
+!DSS_Logo.png
 *.png
 *.jpg
 *.jpeg
