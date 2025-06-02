@@ -1,0 +1,22 @@
+[project]
+name = "elapse-compare"
+version = "0.1.0"
+description = "Air pollution data extraction and comparison with different sources - HealthyPlanet Project - AWI"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "matplotlib>=3.10.3",
+    "pandas>=2.2.3",
+    "xarray>=2025.4.0"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "ruff",
+    "mypy"
+]
+
+[tool.setuptools]
+packages = ["elapse_compare"]
+package-dir = { "" = "src" }

@@ -1,0 +1,23 @@
+{
+	"name": "Python 3 + uv (custom Dockerfile)",
+	"build": {
+		"dockerfile": "Dockerfile"
+	},
+	"features": {
+		"ghcr.io/devcontainers-extra/features/ruff:1": {}
+	},
+	"postCreateCommand": "uv venv && uv pip install -e .[dev]",
+	"remoteUser": "root",
+	"customizations": {
+		"vscode": {
+			"settings": {
+				"python.defaultInterpreterPath": ".venv/bin/python"
+			},
+			"extensions": [
+				"ms-python.python",
+				"ms-python.vscode-pylance",
+				"github.copilot"
+			]
+		}
+	}
+}
