@@ -19,8 +19,8 @@ fi
 
 echo "Starting release process..."
 
-# Ensure we're on the main branch
-git checkout main
+# Ensure we're on the master branch
+git checkout master
 git pull
 
 # Run tests
