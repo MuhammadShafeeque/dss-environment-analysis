@@ -93,9 +93,8 @@ The dev container includes:
 ```
 dss-environment-analysis/
 ├── .devcontainer/          # Dev container configuration
-├── src/                    # Source code
-│   ├── elapse_compare/     # Main package
-│   └── pollution_extraction/
+├── STanalysis/             # Source code for analysis tools
+├── examples/               # Example usage of the package
 ├── tests/                  # Test files
 ├── docs/                   # Documentation
 ├── pyproject.toml          # Project configuration

@@ -5,11 +5,7 @@ from typing import Optional
 
 import pandas as pd
 import xarray as xr
-
-try:
-    import geopandas as gpd
-except Exception:  # pragma: no cover - optional dependency may be missing
-    gpd = None
+import geopandas as gpd
 
 
 def _load_points(path: str | Path, date_col: Optional[str] = None) -> pd.DataFrame:

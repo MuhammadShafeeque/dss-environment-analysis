@@ -1,4 +1,4 @@
-from elapse_compare import __version__
+from STanalysis import __version__
 
 
 def test_version():

@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 
-from pollution_extraction import extract_point_values
+from STanalysis import extract_point_values
 
 
 def test_extract_point_values(tmp_path):

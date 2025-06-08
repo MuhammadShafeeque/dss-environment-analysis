@@ -146,8 +146,8 @@ results/
 plots/
 figures/
 # Allow the logo image in root
-# !DSS_Logo.png
-# *.png
+!DSS_Logo.png
+*.png
 *.jpg
 *.jpeg
 *.gif
