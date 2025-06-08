@@ -17,6 +17,7 @@ A Python package for extracting, analyzing, and comparing environmental data fro
 - Support for multiple input formats (CSV, Shapefile, GeoJSON)
 - Temporal aggregation with configurable window sizes
 - Efficient nearest-neighbor interpolation
+- Automatic coordinate transformation when datasets use projected x/y grids
 - Comprehensive error handling and input validation
 
 ## Installation
@@ -86,6 +87,8 @@ Parameters:
 - `days_back`: Number of days to average backwards from the provided date
 - `date_col`: Optional column in the point file containing the date
 - `output_path`: Optional path to write results (CSV or JSON)
+- Spatial coordinates in the input points are assumed to be WGS84 (EPSG:4326) and
+  will be transformed automatically if the NetCDF data uses a different CRS
 
 Returns:
 - DataFrame containing the extracted values and point metadata
