@@ -6,6 +6,50 @@ from typing import Optional
 import pandas as pd
 import xarray as xr
 import geopandas as gpd
+from pyproj import CRS, Transformer
+
+
+def _get_dataset_crs(ds: xr.Dataset, variable: str) -> CRS | None:
+    """Attempt to read the CRS from a dataset.
+
+    The function looks for a grid mapping variable referenced by the target
+    variable and tries to parse a CRS from its attributes.
+    """
+    grid_mapping_name = ds[variable].attrs.get("grid_mapping")
+    if grid_mapping_name and grid_mapping_name in ds:
+        gm = ds[grid_mapping_name]
+        if "spatial_ref" in gm.attrs:
+            try:
+                return CRS.from_wkt(gm.attrs["spatial_ref"])
+            except Exception:
+                pass
+        if "epsg_code" in gm.attrs:
+            try:
+                return CRS.from_epsg(int(gm.attrs["epsg_code"]))
+            except Exception:
+                pass
+        if "proj4_params" in gm.attrs:
+            try:
+                return CRS.from_proj4(gm.attrs["proj4_params"])
+            except Exception:
+                pass
+    # fall back to global attributes
+    if "spatial_ref" in ds.attrs:
+        try:
+            return CRS.from_wkt(ds.attrs["spatial_ref"])
+        except Exception:
+            pass
+    if "crs_wkt" in ds.attrs:
+        try:
+            return CRS.from_wkt(ds.attrs["crs_wkt"])
+        except Exception:
+            pass
+    if "epsg_code" in ds.attrs:
+        try:
+            return CRS.from_epsg(int(ds.attrs["epsg_code"]))
+        except Exception:
+            pass
+    return None
 
 
 def _load_points(path: str | Path, date_col: Optional[str] = None) -> pd.DataFrame:
@@ -72,20 +116,38 @@ def extract_point_values(
         raise ValueError(f"Variable '{variable}' not found in dataset")
 
     points_df = _load_points(points_path, date_col)
+
+    ds_crs = _get_dataset_crs(ds, variable)
+    input_crs = CRS.from_epsg(4326)
+    transformer: Transformer | None = None
+    if ds_crs and ds_crs != input_crs:
+        transformer = Transformer.from_crs(input_crs, ds_crs, always_xy=True)
+
+    # determine coordinate names
+    coord_names = set(ds.coords)
+    if {"lon", "lat"} <= coord_names:
+        x_name, y_name = "lon", "lat"
+    elif {"x", "y"} <= coord_names:
+        x_name, y_name = "x", "y"
+    else:
+        raise KeyError(
+            "Dataset has no 'lon'/'lat' or 'x'/'y' coordinates for spatial lookup"
+        )
+
     results = []
     for _, row in points_df.iterrows():
         lon = float(row["lon"])
         lat = float(row["lat"])
+        if transformer:
+            x_val, y_val = transformer.transform(lon, lat)
+        else:
+            x_val, y_val = lon, lat
         data = ds[variable]
         if date_col and pd.notna(row.get(date_col)):
             end_date = pd.to_datetime(row[date_col])
             start_date = end_date - pd.Timedelta(days=days_back)
             data = data.sel(time=slice(start_date, end_date))
-        value = (
-            data.sel(lon=lon, lat=lat, method="nearest")
-            .mean()
-            .item()
-        )
+        value = data.sel({x_name: x_val, y_name: y_val}, method="nearest").mean().item()
         out_row = row.drop("geometry", errors="ignore").to_dict()
         out_row["value"] = value
         results.append(out_row)
