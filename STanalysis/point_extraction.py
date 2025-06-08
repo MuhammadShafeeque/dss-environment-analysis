@@ -84,6 +84,22 @@ def _load_points(path: str | Path, date_col: Optional[str] = None) -> pd.DataFra
     return df
 
 
+def _open_dataset(path: str | Path) -> xr.Dataset:
+    """Open a NetCDF file with a helpful error message on binary issues."""
+    try:
+        return xr.open_dataset(path)
+    except Exception as e:  # pragma: no cover - error handling
+        msg = str(e)
+        if "numpy.core.multiarray failed to import" in msg or "_ARRAY_API" in msg:
+            raise ImportError(
+                "netCDF4 could not be imported due to a binary incompatibility\n"
+                "between NumPy and the installed netCDF4 package. "
+                "Upgrade 'netCDF4' to a version built against your NumPy "
+                "or downgrade NumPy to <2."
+            ) from e
+        raise
+
+
 def extract_point_values(
     netcdf_path: str | Path,
     points_path: str | Path,
@@ -111,7 +127,7 @@ def extract_point_values(
         Optional path to write results. If suffix is ``.json`` a JSON file is
         written, otherwise a CSV file is created.
     """
-    ds = xr.open_dataset(netcdf_path)
+    ds = _open_dataset(netcdf_path)
     if variable not in ds:
         raise ValueError(f"Variable '{variable}' not found in dataset")
 
