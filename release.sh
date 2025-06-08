@@ -35,6 +35,10 @@ mypy STanalysis
 echo "Bumping $VERSION_TYPE version..."
 bumpver update --$VERSION_TYPE
 
+# Make sure git is up to date with version changes
+git add .
+git commit --amend --no-edit
+
 # Install the updated package
 echo "Installing updated package..."
 uv pip install -e ".[dev]"

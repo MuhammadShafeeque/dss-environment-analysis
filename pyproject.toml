@@ -1,6 +1,6 @@
 [project]
 name = "STanalysis"
-version = "0.1.0"
+version = "0.1.1"
 description = "Air pollution data extraction and comparison with different sources - HealthyPlanet Project - AWI"
 readme = "README.md"
 requires-python = ">=3.12"
