@@ -8,11 +8,8 @@ push = false
 
 [bumpver.file_patterns]
 "pyproject.toml" = [
-    'version = "{version}"',
+    '^version = "{version}"$',
 ]
 "STanalysis/__init__.py" = [
-    '__version__ = "{version}"',
-]
-"README.md" = [
-    "version {version}",
+    '^__version__ = "{version}"$',
 ]

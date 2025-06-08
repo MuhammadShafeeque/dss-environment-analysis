@@ -35,12 +35,25 @@ mypy STanalysis
 echo "Bumping $VERSION_TYPE version..."
 bumpver update --$VERSION_TYPE
 
+# Install the updated package
+echo "Installing updated package..."
+uv pip install -e ".[dev]"
+
+# Run tests again to verify version match
+echo "Verifying version update..."
+pytest
+
 # Build package
 echo "Building package..."
 python -m build
 
 # Upload to PyPI
 echo "Uploading to PyPI..."
-twine upload -u $TWINE_USERNAME -p $TWINE_PASSWORD dist/*
+if [ -z "$TWINE_USERNAME" ] || [ -z "$TWINE_PASSWORD" ]; then
+    echo "Error: TWINE_USERNAME and TWINE_PASSWORD environment variables must be set"
+    exit 1
+fi
+
+python -m twine upload --non-interactive dist/*
 
 echo "Release process completed successfully!"
