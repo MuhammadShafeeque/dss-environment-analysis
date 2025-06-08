@@ -1,6 +1,6 @@
 """STanalysis - Tools for extracting, analyzing, and comparing environmental data."""
 
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 
 from .point_extraction import extract_point_values
 
