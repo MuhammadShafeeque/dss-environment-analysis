@@ -15,7 +15,10 @@ dependencies = [
     "build>=1.2.2.post1",
     "bumpver>=2024.1130",
     "seaborn>=0.13.2",
-    "numpy>=2.2.6",
+    "numpy<2.0.0,>=1.26.4",
+    "netCDF4>=1.6.3",
+    "requests>=2.32.3",
+    "pydantic>=2.8.0",
 ]
 
 [project.optional-dependencies]
