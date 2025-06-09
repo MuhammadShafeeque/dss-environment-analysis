@@ -19,6 +19,7 @@ dependencies = [
     "netCDF4>=1.6.3",
     "requests>=2.32.3",
     "pydantic>=2.8.0",
+    "jupyter>=1.1.1",
 ]
 
 [project.optional-dependencies]
