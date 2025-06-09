@@ -158,6 +158,30 @@ dss-environment-analysis/          # Repository root
 └── README.md                    # This file
 ```
 
+## Troubleshooting
+
+### NumPy binary compatibility errors
+
+If you see an error like:
+
+```
+ImportError: A module that was compiled using NumPy 1.x cannot be run in NumPy 2.x
+```
+
+one of the compiled dependencies (for example `netCDF4`, `pyproj`, or `shapely`)
+was built against an older NumPy version. Reinstall the affected packages after
+upgrading NumPy so that wheels compiled for your NumPy release are used:
+
+```bash
+pip install --force-reinstall --no-binary :all: netCDF4 pyproj shapely
+```
+
+If compatible wheels are not available, downgrade NumPy to a 1.x release:
+
+```bash
+pip install "numpy<2"
+```
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
