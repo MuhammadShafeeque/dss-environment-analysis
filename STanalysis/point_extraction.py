@@ -18,6 +18,12 @@ def _get_dataset_crs(ds: xr.Dataset, variable: str) -> CRS | None:
     grid_mapping_name = ds[variable].attrs.get("grid_mapping")
     if grid_mapping_name and grid_mapping_name in ds:
         gm = ds[grid_mapping_name]
+        # Check for crs_wkt first (common in CF conventions)
+        if "crs_wkt" in gm.attrs:
+            try:
+                return CRS.from_wkt(gm.attrs["crs_wkt"])
+            except Exception:
+                pass
         if "spatial_ref" in gm.attrs:
             try:
                 return CRS.from_wkt(gm.attrs["spatial_ref"])
@@ -33,6 +39,36 @@ def _get_dataset_crs(ds: xr.Dataset, variable: str) -> CRS | None:
                 return CRS.from_proj4(gm.attrs["proj4_params"])
             except Exception:
                 pass
+        # Try to construct from grid mapping parameters
+        if "grid_mapping_name" in gm.attrs:
+            try:
+                if gm.attrs["grid_mapping_name"] == "lambert_azimuthal_equal_area":
+                    # Handle Lambert Azimuthal Equal Area projection
+                    params = {}
+                    if "longitude_of_projection_origin" in gm.attrs:
+                        params["lon_0"] = gm.attrs["longitude_of_projection_origin"]
+                    if "latitude_of_projection_origin" in gm.attrs:
+                        params["lat_0"] = gm.attrs["latitude_of_projection_origin"]
+                    if "false_easting" in gm.attrs:
+                        params["x_0"] = gm.attrs["false_easting"]
+                    if "false_northing" in gm.attrs:
+                        params["y_0"] = gm.attrs["false_northing"]
+                    if "semi_major_axis" in gm.attrs and "semi_minor_axis" in gm.attrs:
+                        params["a"] = gm.attrs["semi_major_axis"]
+                        params["b"] = gm.attrs["semi_minor_axis"]
+                    elif "semi_major_axis" in gm.attrs and "inverse_flattening" in gm.attrs:
+                        params["a"] = gm.attrs["semi_major_axis"]
+                        params["rf"] = gm.attrs["inverse_flattening"]
+                    
+                    proj_string = "+proj=laea"
+                    for key, value in params.items():
+                        proj_string += f" +{key}={value}"
+                    proj_string += " +units=m +no_defs"
+                    
+                    return CRS.from_proj4(proj_string)
+            except Exception:
+                pass
+    
     # fall back to global attributes
     if "spatial_ref" in ds.attrs:
         try:
